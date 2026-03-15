@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LessonLive</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+
+  <div class="app-layout">
+
+    <!-- ─── Шапка ──────────────────────────────────────────────────────── -->
+    <header class="app-header">
+
+      <div class="header-left">
+        <span class="app-title" data-i18n="header.title">LessonLive</span>
+
+        <!-- Индикатор записи -->
+        <div class="recording-status" id="recording-status">
+          <span class="rec-dot" id="rec-dot"></span>
+          <span id="rec-label" data-i18n="header.idle">Ожидание</span>
+        </div>
+
+        <!-- Статус моделей -->
+        <div class="model-status loading" id="model-status" data-i18n="models.loading">
+          ⏳ Загрузка моделей...
+        </div>
+      </div>
+
+      <div class="header-right">
+        <!-- Переключатель языка UI -->
+        <div class="ui-lang-switch">
+          <button data-lang="ru" class="active" onclick="switchLanguage('ru')">RU</button>
+          <button data-lang="en" onclick="switchLanguage('en')">EN</button>
+        </div>
+      </div>
+
+    </header>
+    <!-- /app-header -->
+
+
+    <!-- ─── Основной контент ────────────────────────────────────────────── -->
+    <main class="app-main">
+
+      <!-- Левая панель -->
+      <aside class="sidebar">
+
+        <!-- Спикеры -->
+        <div class="sidebar-section">
+          <h3 data-i18n="sidebar.speakers">Спикеры</h3>
+
+          <!-- Спикер 0 -->
+          <div class="speaker-card speaker-0">
+            <div class="speaker-card-header">
+              <div class="speaker-dot"></div>
+              <span class="speaker-label">Speaker 1</span>
+            </div>
+            <input
+              type="text"
+              id="speaker-0-name"
+              data-i18n-placeholder="speaker.0.default"
+              placeholder="Преподаватель"
+            />
+          </div>
+
+          <!-- Спикер 1 -->
+          <div class="speaker-card speaker-1">
+            <div class="speaker-card-header">
+              <div class="speaker-dot"></div>
+              <span class="speaker-label">Speaker 2</span>
+            </div>
+            <input
+              type="text"
+              id="speaker-1-name"
+              data-i18n-placeholder="speaker.1.default"
+              placeholder="Ученик"
+            />
+          </div>
+
+          <button
+            class="btn btn-ghost btn-sm speaker-save-btn"
+            onclick="saveSpeakerNames()"
+            data-i18n="speaker.save"
+          >
+            Сохранить
+          </button>
+        </div>
+
+        <!-- Прошлые занятия -->
+        <div class="sidebar-section">
+          <h3 data-i18n="sidebar.sessions">Прошлые занятия</h3>
+          <div class="sessions-list" id="sessions-list">
+            <p class="sessions-empty" data-i18n="sessions.empty">Нет сохранённых занятий</p>
+          </div>
+        </div>
+
+      </aside>
+      <!-- /sidebar -->
+
+
+      <!-- Область транскрипции -->
+      <div class="transcript-area">
+        <div class="transcript-scroll" id="transcript-scroll">
+
+          <!-- Пустое состояние — скрывается при появлении первой фразы -->
+          <div class="transcript-empty" id="transcript-empty">
+            <div class="icon">🎙</div>
+            <p>
+              <strong data-i18n="empty.title">Ждём начала занятия</strong><br/>
+              <span data-i18n="empty.desc">Нажмите «Начать запись» чтобы запустить транскрипцию</span>
+            </p>
+          </div>
+
+          <!-- Фразы добавляются сюда динамически через app.js → appendPhrase() -->
+
+        </div>
+      </div>
+      <!-- /transcript-area -->
+
+    </main>
+    <!-- /app-main -->
+
+
+    <!-- ─── Нижняя панель ───────────────────────────────────────────────── -->
+    <footer class="app-footer">
+
+      <div class="footer-left">
+        <!-- Главная кнопка записи -->
+        <button
+          class="btn btn-primary btn-lg"
+          id="record-btn"
+          onclick="toggleRecording()"
+          disabled
+          data-i18n="btn.start"
+        >
+          ▶ Начать запись
+        </button>
+
+        <!-- Кнопка очистки экрана -->
+        <button
+          class="btn btn-ghost"
+          onclick="clearTranscript()"
+          data-i18n="btn.clear"
+        >
+          Очистить
+        </button>
+      </div>
+
+      <div class="footer-right">
+        <!-- Счётчик фраз -->
+        <span class="phrase-count" id="phrase-count">0 фраз</span>
+      </div>
+
+    </footer>
+    <!-- /app-footer -->
+
+  </div>
+  <!-- /app-layout -->
+
+
+  <!-- Тост уведомления -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LessonLive — Установка</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body class="setup-page">
+
+  <div class="setup-container">
+
+    <!-- Логотип -->
+    <div class="setup-logo">
+      <h1>LessonLive</h1>
+      <p data-i18n="setup.subtitle">Первоначальная настройка</p>
+    </div>
+
+    <!-- Шаги -->
+    <div class="setup-steps">
+
+      <!-- ШАГ 1: VB-Cable -->
+      <div class="setup-step" id="step-vbcable">
+        <div class="step-header">
+          <div class="step-num">1</div>
+          <div class="step-title" data-i18n="setup.step1.title">Виртуальный аудио-кабель</div>
+        </div>
+        <div class="step-body">
+          <p data-i18n="setup.step1.desc">
+            VB-Cable позволяет приложению слышать звук из Zoom без конфликта с микрофоном.
+          </p>
+          <div class="step-status" id="vbcable-status">
+            <span id="vbcable-icon">⏳</span>
+            <span id="vbcable-text" data-i18n="setup.checking">Проверяю...</span>
+          </div>
+          <div id="vbcable-instructions" style="display:none">
+            <p data-i18n="setup.step1.install">Установка (бесплатно, 2 минуты):</p>
+            <ol style="padding-left: 20px; font-size: 0.85rem; color: var(--text-secondary); line-height: 1.9;">
+              <li data-i18n="setup.step1.i1">Скачайте VB-Cable по ссылке ниже</li>
+              <li data-i18n="setup.step1.i2">Запустите <code>VBCABLE_Setup_x64.exe</code> от администратора</li>
+              <li data-i18n="setup.step1.i3">Перезагрузите компьютер</li>
+              <li data-i18n="setup.step1.i4">В Zoom: Настройки → Аудио → Динамик → <code>CABLE Input</code></li>
+              <li data-i18n="setup.step1.i5">Нажмите «Проверить снова»</li>
+            </ol>
+            <div class="step-actions">
+              <a href="https://vb-audio.com/Cable/" target="_blank" class="btn btn-primary btn-sm">
+                ⬇ Скачать VB-Cable
+              </a>
+              <button class="btn btn-ghost btn-sm" onclick="checkVBCable()">
+                🔄 <span data-i18n="setup.retry">Проверить снова</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ШАГ 2: HuggingFace токен -->
+      <div class="setup-step" id="step-token">
+        <div class="step-header">
+          <div class="step-num">2</div>
+          <div class="step-title" data-i18n="setup.step2.title">HuggingFace токен</div>
+        </div>
+        <div class="step-body">
+          <p data-i18n="setup.step2.desc">
+            Токен нужен для однократного скачивания модели разделения спикеров.
+            После скачивания модель работает полностью офлайн.
+          </p>
+          <div id="token-saved-msg" style="display:none">
+            <div class="step-status ok">
+              <span>✓</span>
+              <span data-i18n="setup.step2.saved">Токен сохранён</span>
+            </div>
+          </div>
+          <div id="token-form">
+            <label for="hf-token" data-i18n="setup.step2.label">
+              Вставьте токен (начинается с hf_)
+            </label>
+            <div style="display:flex; gap:8px; margin-bottom:10px;">
+              <input type="password" id="hf-token" placeholder="hf_xxxxxxxxxxxxxxxxxxxxxxxx" />
+              <button class="btn btn-primary btn-sm" onclick="saveToken()" id="token-save-btn">
+                <span data-i18n="setup.save">Сохранить</span>
+              </button>
+            </div>
+            <div style="display:flex; gap:12px; flex-wrap:wrap;">
+              <a href="https://huggingface.co/join" target="_blank" style="font-size:0.82rem;">
+                📝 <span data-i18n="setup.step2.register">Зарегистрироваться</span>
+              </a>
+              <a href="https://huggingface.co/settings/tokens" target="_blank" style="font-size:0.82rem;">
+                🔑 <span data-i18n="setup.step2.gettoken">Получить токен</span>
+              </a>
+              <a href="https://huggingface.co/pyannote/speaker-diarization-3.1" target="_blank" style="font-size:0.82rem;">
+                ✅ <span data-i18n="setup.step2.accept">Принять лицензию pyannote</span>
+              </a>
+            </div>
+          </div>
+          <div id="token-error" style="display:none; margin-top:10px;">
+            <div class="step-status fail">
+              <span>✗</span>
+              <span id="token-error-text"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ШАГ 3: Язык интерфейса -->
+      <div class="setup-step" id="step-lang">
+        <div class="step-header">
+          <div class="step-num">3</div>
+          <div class="step-title" data-i18n="setup.step3.title">Язык интерфейса</div>
+        </div>
+        <div class="step-body">
+          <p data-i18n="setup.step3.desc">
+            Выберите язык интерфейса приложения. Можно изменить в любой момент.
+          </p>
+          <div class="lang-toggle">
+            <button class="lang-btn selected" id="lang-ru" onclick="selectLang('ru')">🇷🇺 Русский</button>
+            <button class="lang-btn" id="lang-en" onclick="selectLang('en')">🇬🇧 English</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ШАГ 4: Готово -->
+      <div class="setup-step" id="step-done" style="display:none">
+        <div class="setup-done">
+          <div class="icon">🎉</div>
+          <h2 data-i18n="setup.done.title">Всё готово!</h2>
+          <p data-i18n="setup.done.desc">
+            Установка завершена. Запустите <code>app.py</code> чтобы начать работу.
+          </p>
+          <a href="/" class="btn btn-success btn-lg">
+            <span data-i18n="setup.done.go">Открыть приложение →</span>
+          </a>
+        </div>
+      </div>
+
+    </div>
+    <!-- /setup-steps -->
+
+  </div>
+  <!-- /setup-container -->
+
+  <!-- Тост уведомления -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <script>
+    // ─── i18n ───────────────────────────────────────────────────────────────
+
+    const TRANSLATIONS = {
+      ru: {
+        "setup.subtitle":       "Первоначальная настройка",
+        "setup.step1.title":    "Виртуальный аудио-кабель",
+        "setup.step1.desc":     "VB-Cable позволяет приложению слышать звук из Zoom без конфликта с микрофоном.",
+        "setup.step1.install":  "Установка (бесплатно, 2 минуты):",
+        "setup.step1.i1":       "Скачайте VB-Cable по ссылке ниже",
+        "setup.step1.i2":       "Запустите VBCABLE_Setup_x64.exe от администратора",
+        "setup.step1.i3":       "Перезагрузите компьютер",
+        "setup.step1.i4":       "В Zoom: Настройки → Аудио → Динамик → CABLE Input",
+        "setup.step1.i5":       "Нажмите «Проверить снова»",
+        "setup.step2.title":    "HuggingFace токен",
+        "setup.step2.desc":     "Токен нужен для однократного скачивания модели разделения спикеров. После скачивания модель работает полностью офлайн.",
+        "setup.step2.label":    "Вставьте токен (начинается с hf_)",
+        "setup.step2.saved":    "Токен сохранён",
+        "setup.step2.register": "Зарегистрироваться",
+        "setup.step2.gettoken": "Получить токен",
+        "setup.step2.accept":   "Принять лицензию pyannote",
+        "setup.step3.title":    "Язык интерфейса",
+        "setup.step3.desc":     "Выберите язык интерфейса приложения. Можно изменить в любой момент.",
+        "setup.done.title":     "Всё готово!",
+        "setup.done.desc":      "Установка завершена. Нажмите кнопку чтобы открыть приложение.",
+        "setup.done.go":        "Открыть приложение →",
+        "setup.checking":       "Проверяю...",
+        "setup.retry":          "Проверить снова",
+        "setup.save":           "Сохранить",
+      },
+      en: {
+        "setup.subtitle":       "Initial Setup",
+        "setup.step1.title":    "Virtual Audio Cable",
+        "setup.step1.desc":     "VB-Cable lets the app hear audio from Zoom without mic conflicts.",
+        "setup.step1.install":  "Installation (free, 2 minutes):",
+        "setup.step1.i1":       "Download VB-Cable using the link below",
+        "setup.step1.i2":       "Run VBCABLE_Setup_x64.exe as Administrator",
+        "setup.step1.i3":       "Restart your computer",
+        "setup.step1.i4":       "In Zoom: Settings → Audio → Speaker → CABLE Input",
+        "setup.step1.i5":       "Click 'Check again'",
+        "setup.step2.title":    "HuggingFace Token",
+        "setup.step2.desc":     "Token is needed to download the speaker diarization model once. After that, the model runs fully offline.",
+        "setup.step2.label":    "Paste your token (starts with hf_)",
+        "setup.step2.saved":    "Token saved",
+        "setup.step2.register": "Register",
+        "setup.step2.gettoken": "Get token",
+        "setup.step2.accept":   "Accept pyannote license",
+        "setup.step3.title":    "Interface Language",
+        "setup.step3.desc":     "Choose the app interface language. Can be changed anytime.",
+        "setup.done.title":     "All done!",
+        "setup.done.desc":      "Setup complete. Click the button to open the app.",
+        "setup.done.go":        "Open app →",
+        "setup.checking":       "Checking...",
+        "setup.retry":          "Check again",
+        "setup.save":           "Save",
+      }
+    };
+
+    let currentLang = localStorage.getItem("ll_lang") || "ru";
+
+    function t(key) {
+      return TRANSLATIONS[currentLang]?.[key] || TRANSLATIONS["ru"][key] || key;
+    }
+
+    function applyTranslations() {
+      document.querySelectorAll("[data-i18n]").forEach(el => {
+        const key = el.getAttribute("data-i18n");
+        el.textContent = t(key);
+      });
+    }
+
+    function selectLang(lang) {
+      currentLang = lang;
+      localStorage.setItem("ll_lang", lang);
+      document.getElementById("lang-ru").classList.toggle("selected", lang === "ru");
+      document.getElementById("lang-en").classList.toggle("selected", lang === "en");
+      applyTranslations();
+    }
+
+    // ─── VB-Cable ────────────────────────────────────────────────────────────
+
+    async function checkVBCable() {
+      const statusEl  = document.getElementById("vbcable-status");
+      const iconEl    = document.getElementById("vbcable-icon");
+      const textEl    = document.getElementById("vbcable-text");
+      const instrEl   = document.getElementById("vbcable-instructions");
+      const stepEl    = document.getElementById("step-vbcable");
+
+      statusEl.className = "step-status";
+      iconEl.textContent = "⏳";
+      textEl.textContent = t("setup.checking");
+
+      try {
+        const res = await fetch("/api/setup/status");
+        const data = await res.json();
+
+        if (data.vbcable) {
+          statusEl.className = "step-status ok";
+          iconEl.textContent = "✓";
+          textEl.textContent = currentLang === "ru" ? "VB-Cable найден" : "VB-Cable found";
+          instrEl.style.display = "none";
+          stepEl.classList.add("done");
+        } else {
+          statusEl.className = "step-status fail";
+          iconEl.textContent = "✗";
+          textEl.textContent = currentLang === "ru" ? "VB-Cable не найден" : "VB-Cable not found";
+          instrEl.style.display = "block";
+          stepEl.classList.add("error-step");
+        }
+      } catch (e) {
+        statusEl.className = "step-status warn";
+        iconEl.textContent = "⚠";
+        textEl.textContent = currentLang === "ru" ? "Не удалось проверить" : "Could not check";
+      }
+    }
+
+    // ─── HuggingFace токен ───────────────────────────────────────────────────
+
+    async function saveToken() {
+      const tokenInput = document.getElementById("hf-token");
+      const token = tokenInput.value.trim();
+      const errorEl = document.getElementById("token-error");
+      const errorText = document.getElementById("token-error-text");
+      const saveBtn = document.getElementById("token-save-btn");
+
+      errorEl.style.display = "none";
+
+      if (!token) {
+        showError(currentLang === "ru" ? "Введите токен" : "Enter token");
+        return;
+      }
+
+      saveBtn.disabled = true;
+
+      try {
+        const res = await fetch("/api/setup/token", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ token }),
+        });
+
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+          document.getElementById("token-form").style.display = "none";
+          document.getElementById("token-saved-msg").style.display = "block";
+          document.getElementById("step-token").classList.add("done");
+          showToast(currentLang === "ru" ? "Токен сохранён ✓" : "Token saved ✓", "success");
+          showFinalStep();
+        } else {
+          showError(data.detail || (currentLang === "ru" ? "Ошибка сохранения" : "Save error"));
+        }
+      } catch (e) {
+        showError(currentLang === "ru" ? "Ошибка соединения" : "Connection error");
+      } finally {
+        saveBtn.disabled = false;
+      }
+
+      function showError(msg) {
+        errorEl.style.display = "block";
+        errorText.textContent = msg;
+      }
+    }
+
+    // ─── Финальный экран ─────────────────────────────────────────────────────
+
+    function showFinalStep() {
+      document.getElementById("step-done").style.display = "block";
+      document.getElementById("step-done").scrollIntoView({ behavior: "smooth" });
+    }
+
+    // ─── Тосты ───────────────────────────────────────────────────────────────
+
+    function showToast(message, type = "info", duration = 3000) {
+      const container = document.getElementById("toast-container");
+      const toast = document.createElement("div");
+      toast.className = `toast ${type}`;
+      toast.textContent = message;
+      container.appendChild(toast);
+      setTimeout(() => toast.remove(), duration);
+    }
+
+    // ─── Инициализация ───────────────────────────────────────────────────────
+
+    // Проверяем уже ли сохранён токен
+    async function initSetup() {
+      applyTranslations();
+      selectLang(currentLang);
+
+      const res = await fetch("/api/setup/status").catch(() => null);
+      if (!res) return;
+
+      const data = await res.json().catch(() => ({}));
+
+      // Токен уже есть?
+      if (data.pyannote) {
+        document.getElementById("token-form").style.display = "none";
+        document.getElementById("token-saved-msg").style.display = "block";
+        document.getElementById("step-token").classList.add("done");
+      }
+
+      // Проверяем VB-Cable
+      await checkVBCable();
+
+      // Если всё уже настроено — показываем финальный шаг
+      if (data.whisper) {
+        showFinalStep();
+      }
+    }
+
+    initSetup();
+  </script>
+</body>
+</html>

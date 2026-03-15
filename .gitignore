@@ -1,0 +1,18 @@
+# Модели AI — не загружаем (слишком большие)
+models/
+
+# Сессии — личные данные
+sessions/
+
+# Токены и секреты
+.env
+.setup_done
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+
+# IDE
+.vscode/
