@@ -21,6 +21,9 @@ SESSIONS_DIR = BASE_DIR / "sessions"
 ENV_FILE = BASE_DIR / ".env"
 SETUP_DONE_FILE = BASE_DIR / ".setup_done"
 
+# ─── Глобальные переменные
+_saved_model_size = "small"
+
 # ─── Утилиты вывода ───────────────────────────────────────────────────────────
 
 def log(msg: str):
@@ -36,9 +39,9 @@ def log_err(msg: str):
     print(f"  ✗ {msg}")
 
 def section(title: str):
-    print(f"\n{'─' * 50}")
+    print(f"\n{'-' * 50}")
     print(f"  {title}")
-    print(f"{'─' * 50}")
+    print(f"{'-' * 50}")
 
 # ─── 1. Проверка версии Python ────────────────────────────────────────────────
 
@@ -399,6 +402,8 @@ def choose_whisper_model(has_cuda: bool) -> str:
 
     model_map = {"1": "small", "2": "medium", "3": "large-v3", "": default}
     chosen = model_map.get(choice, model_map[default])
+    global _saved_model_size
+    _saved_model_size = chosen
     log_ok(f"Выбрана модель: {chosen}")
     return chosen
 
@@ -415,6 +420,7 @@ def finalize_setup(whisper_ok: bool, pyannote_ok: bool, loopback_ok: bool):
         "whisper": whisper_ok,
         "pyannote": pyannote_ok,
         "loopback": loopback_ok,
+        "model_size": _saved_model_size,
     }
 
     with open(SETUP_DONE_FILE, "w") as f:
@@ -442,9 +448,9 @@ def run_setup():
     Точка входа при запуске файла.
     """
     print()
-    print("╔══════════════════════════════════════════════════╗")
-    print("║          LessonLive — Установка v1.0             ║")
-    print("╚══════════════════════════════════════════════════╝")
+    print("=" * 52)
+    print("  LessonLive - Ustanovka v1.0")
+    print("=" * 52)
 
     # Шаг 1: Проверка Python
     if not check_python_version():
